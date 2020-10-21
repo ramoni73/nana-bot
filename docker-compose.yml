@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  telegramdb:
+    image: mongo:3.6
+    container_name: telegramdb
+    ports:
+      - 27017:27017
+  app:
+    container_name: telegrambot
+    image: telegrambot
+    build: ./
+    ports:
+      - 8080:8080
+    links:
+      - telegramdb
