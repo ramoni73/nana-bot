@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Table(name = "twitch_streamers_subscription")
 @NoArgsConstructor
 @AllArgsConstructor
-public class TwitchStreamersSubscription {
+public class TwitchStreamersSubscription implements Comparable<TwitchStreamersSubscription> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,4 +22,9 @@ public class TwitchStreamersSubscription {
     @ManyToOne(targetEntity = TelegramUser.class)
     @JoinColumn(name = "telegram_user_id")
     private TelegramUser telegramUser;
+
+    @Override
+    public int compareTo(TwitchStreamersSubscription o) {
+        return this.streamer.compareTo(o.getStreamer());
+    }
 }
