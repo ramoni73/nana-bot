@@ -1,15 +1,15 @@
-package me.kolganov.telegramBot.telegram.service.twitch;
+package me.kolganov.telegramBot.telegram.botService.twitch;
 
 import lombok.RequiredArgsConstructor;
-import me.kolganov.telegramBot.integration.twitch.domain.ChannelData;
-import me.kolganov.telegramBot.integration.twitch.domain.ChannelInfo;
-import me.kolganov.telegramBot.integration.twitch.domain.GameData;
+import me.kolganov.telegramBot.integration.twitch.domain.channel.ChannelData;
+import me.kolganov.telegramBot.integration.twitch.domain.channel.Channel;
+import me.kolganov.telegramBot.integration.twitch.domain.game.GameData;
 import me.kolganov.telegramBot.integration.twitch.service.TwitchService;
+import me.kolganov.telegramBot.telegram.botService.message.MessagePresenter;
 import me.kolganov.telegramBot.telegram.domain.TelegramUser;
 import me.kolganov.telegramBot.telegram.domain.TwitchStreamersSubscription;
-import me.kolganov.telegramBot.telegram.repository.TelegramUserRepository;
-import me.kolganov.telegramBot.telegram.repository.TwitchStreamersSubscriptionRepository;
-import me.kolganov.telegramBot.telegram.service.message.MessagePresenter;
+import me.kolganov.telegramBot.telegram.service.TelegramUserService;
+import me.kolganov.telegramBot.telegram.service.TwitchStreamersSubscriptionService;
 import me.kolganov.telegramBot.utils.Constants;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -29,8 +29,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TelegramTwitchServiceImpl implements TelegramTwitchService {
     private final TwitchService twitchService;
-    private final TelegramUserRepository telegramUserRepository;
-    private final TwitchStreamersSubscriptionRepository twitchStreamersSubscriptionRepository;
+    private final TelegramUserService telegramUserService;
+    private final TwitchStreamersSubscriptionService twitchStreamersSubscriptionService;
     private final MessagePresenter messagePresenter;
 
     @Override
@@ -59,28 +59,21 @@ public class TelegramTwitchServiceImpl implements TelegramTwitchService {
     @Override
     public SendMessage sendStreamerInfo(Message message) {
         String inputMessage = message.getText().replace("/", "");
-        ChannelInfo channelInfo = twitchService.getChanelInfo(inputMessage);
+        Channel channel = twitchService.getChanel(inputMessage);
 
-        TelegramUser telegramUser = telegramUserRepository
-                .findByUserIdAndChatId(
-                        message.getFrom().getId(),
-                        message.getChatId()
-                ).orElse(
-                        TelegramUser.builder()
-                                .twitchStreamersSubscriptions(new ArrayList<>())
-                                .build());
+        TelegramUser telegramUser = telegramUserService.getUser(message.getFrom().getId(), message.getChatId());
 
-        if (null != channelInfo.getError()) {
-            return messagePresenter.presentTextMessage(message.getChatId(), channelInfo.getError());
+        if (null != channel.getError()) {
+            return messagePresenter.presentTextMessage(message.getChatId(), channel.getError());
         } else {
-            ChannelData channelData = channelInfo.getChannelDataList()
+            ChannelData channelData = channel.getChannelDataList()
                     .stream()
                     .filter(c -> inputMessage.equalsIgnoreCase(c.getDisplayName()))
                     .findFirst()
                     .orElse(new ChannelData(Constants.TWITCH_OUTPUT_STREAMER_NOT_FOUND));
 
             if (channelData.isLive()) {
-                GameData gameData = twitchService.getGameInfo(channelData.getGameId()).getGameDataList()
+                GameData gameData = twitchService.getGame(channelData.getGameId()).getGameDataList()
                         .stream()
                         .findFirst()
                         .orElse(new GameData());
@@ -100,17 +93,10 @@ public class TelegramTwitchServiceImpl implements TelegramTwitchService {
 
     @Override
     public SendMessage sendSubscriptionMessage(CallbackQuery callbackQuery) {
-        TelegramUser telegramUser = telegramUserRepository
-                .findByUserIdAndChatId(
-                        callbackQuery.getFrom().getId(),
-                        callbackQuery.getMessage().getChatId()
-                ).orElse(
-                        TelegramUser.builder()
-                                .username(callbackQuery.getFrom().getUserName())
-                                .userId(callbackQuery.getFrom().getId())
-                                .chatId(callbackQuery.getMessage().getChatId())
-                                .twitchStreamersSubscriptions(new ArrayList<>())
-                                .build());
+        TelegramUser telegramUser = telegramUserService.getUser(
+                callbackQuery.getFrom().getId(),
+                callbackQuery.getMessage().getChatId());
+        telegramUser.setUsername(callbackQuery.getFrom().getUserName());
 
         SendMessage message;
 
@@ -124,8 +110,16 @@ public class TelegramTwitchServiceImpl implements TelegramTwitchService {
                     .telegramUser(telegramUser)
                     .build();
 
-            telegramUserRepository.save(telegramUser);
-            twitchStreamersSubscriptionRepository.save(twitchStreamersSubscription);
+            telegramUserService.saveUser(telegramUser);
+            twitchStreamersSubscriptionService.saveSubscription(twitchStreamersSubscription);
+
+            ChannelData channelData = twitchService.getChanel(callbackQuery.getData().toLowerCase())
+                    .getChannelDataList()
+                    .stream()
+                    .findFirst()
+                    .orElse(new ChannelData());
+
+            twitchService.subscribe(channelData.getId());
 
             message = messagePresenter.presentTextMessage(
                     callbackQuery.getMessage().getChatId(),
@@ -137,7 +131,7 @@ public class TelegramTwitchServiceImpl implements TelegramTwitchService {
                     .findFirst()
                     .orElse(TwitchStreamersSubscription.builder().build());
 
-            twitchStreamersSubscriptionRepository.delete(subscription);
+            twitchStreamersSubscriptionService.deleteSubscription(subscription);
 
             message = messagePresenter.presentTextMessage(
                     callbackQuery.getMessage().getChatId(),
@@ -148,14 +142,7 @@ public class TelegramTwitchServiceImpl implements TelegramTwitchService {
 
     @Override
     public SendMessage sendOnlineStreamers(Message message) {
-        TelegramUser telegramUser = telegramUserRepository
-                .findByUserIdAndChatId(
-                        message.getFrom().getId(),
-                        message.getChatId()
-                ).orElse(
-                        TelegramUser.builder()
-                                .twitchStreamersSubscriptions(new ArrayList<>())
-                                .build());
+        TelegramUser telegramUser = telegramUserService.getUser(message.getFrom().getId(), message.getChatId());
 
         if (telegramUser.getTwitchStreamersSubscriptions().isEmpty()) {
             return messagePresenter.presentTextMessage(
@@ -167,8 +154,8 @@ public class TelegramTwitchServiceImpl implements TelegramTwitchService {
                     .stream()
                     .sorted()
                     .forEach(s -> {
-                        ChannelInfo channelInfo = twitchService.getChanelInfo(s.getStreamer());
-                        ChannelData channelData = channelInfo.getChannelDataList()
+                        Channel channel = twitchService.getChanel(s.getStreamer());
+                        ChannelData channelData = channel.getChannelDataList()
                                 .stream()
                                 .filter(c -> s.getStreamer().equalsIgnoreCase(c.getDisplayName()))
                                 .findFirst()

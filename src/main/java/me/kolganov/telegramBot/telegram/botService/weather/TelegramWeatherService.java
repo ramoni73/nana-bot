@@ -1,4 +1,4 @@
-package me.kolganov.telegramBot.telegram.service.weather;
+package me.kolganov.telegramBot.telegram.botService.weather;
 
 import me.kolganov.telegramBot.emoji.Emojis;
 import me.kolganov.telegramBot.integration.weather.domain.WeatherMain;

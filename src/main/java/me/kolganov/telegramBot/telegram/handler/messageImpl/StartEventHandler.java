@@ -2,7 +2,7 @@ package me.kolganov.telegramBot.telegram.handler.messageImpl;
 
 import lombok.RequiredArgsConstructor;
 import me.kolganov.telegramBot.telegram.handler.TelegramEventHandler;
-import me.kolganov.telegramBot.telegram.service.menu.TelegramMenuService;
+import me.kolganov.telegramBot.telegram.botService.menu.TelegramMenuService;
 import me.kolganov.telegramBot.telegram.state.BotState;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

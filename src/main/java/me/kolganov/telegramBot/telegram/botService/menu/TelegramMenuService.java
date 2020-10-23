@@ -1,4 +1,4 @@
-package me.kolganov.telegramBot.telegram.service.menu;
+package me.kolganov.telegramBot.telegram.botService.menu;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 

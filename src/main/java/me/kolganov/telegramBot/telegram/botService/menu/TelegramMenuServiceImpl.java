@@ -1,7 +1,7 @@
-package me.kolganov.telegramBot.telegram.service.menu;
+package me.kolganov.telegramBot.telegram.botService.menu;
 
 import lombok.RequiredArgsConstructor;
-import me.kolganov.telegramBot.telegram.service.message.MessagePresenter;
+import me.kolganov.telegramBot.telegram.botService.message.MessagePresenter;
 import me.kolganov.telegramBot.utils.Constants;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

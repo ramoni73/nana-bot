@@ -1,4 +1,4 @@
-package me.kolganov.telegramBot.integration.twitch.domain;
+package me.kolganov.telegramBot.integration.twitch.domain.channel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

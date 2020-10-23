@@ -1,9 +1,9 @@
-package me.kolganov.telegramBot.telegram.service.weather;
+package me.kolganov.telegramBot.telegram.botService.weather;
 
 import lombok.RequiredArgsConstructor;
 import me.kolganov.telegramBot.integration.weather.domain.WeatherMain;
 import me.kolganov.telegramBot.integration.weather.service.WeatherService;
-import me.kolganov.telegramBot.telegram.service.message.MessagePresenter;
+import me.kolganov.telegramBot.telegram.botService.message.MessagePresenter;
 import me.kolganov.telegramBot.utils.Constants;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

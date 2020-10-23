@@ -1,8 +1,8 @@
-package me.kolganov.telegramBot.telegram.service.twitch;
+package me.kolganov.telegramBot.telegram.botService.twitch;
 
 import me.kolganov.telegramBot.emoji.Emojis;
-import me.kolganov.telegramBot.integration.twitch.domain.ChannelData;
-import me.kolganov.telegramBot.integration.twitch.domain.GameData;
+import me.kolganov.telegramBot.integration.twitch.domain.channel.ChannelData;
+import me.kolganov.telegramBot.integration.twitch.domain.game.GameData;
 import me.kolganov.telegramBot.utils.Constants;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -29,6 +29,7 @@ public interface TelegramTwitchService {
         LocalDateTime dateTime = LocalDateTime.parse(channelData.getStartedAt(), formatter);
 
         ZonedDateTime zonedDateTime = ZonedDateTime.of(dateTime, ZoneId.of("Europe/Moscow"));
+        zonedDateTime = zonedDateTime.plusHours(3);
         String time = zonedDateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "(МСК)";
 
         stringBuilder
@@ -50,18 +51,6 @@ public interface TelegramTwitchService {
                 .append(Emojis.FACE_WITH_MONOCLE).append(" Стример: ").append(channelData.getDisplayName()).append("\n")
                 .append(Emojis.VIDEO_GAME).append(Constants.TWITCH_OUTPUT_STREAMER_OFFLINE).append("\n").append("\n")
                 .append("https://www.twitch.tv/").append(channelData.getDisplayName());
-
-        return stringBuilder.toString();
-    }
-
-    default String streamerInfoAnotherParser(ChannelData channelData) {
-        if (null != channelData.getError())
-            return channelData.getError();
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder
-                .append(Emojis.FACE_WITH_MONOCLE).append(" Стример: ").append(channelData.getDisplayName()).append("\n");
 
         return stringBuilder.toString();
     }

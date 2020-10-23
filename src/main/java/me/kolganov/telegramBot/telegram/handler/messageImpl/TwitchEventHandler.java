@@ -2,7 +2,7 @@ package me.kolganov.telegramBot.telegram.handler.messageImpl;
 
 import lombok.RequiredArgsConstructor;
 import me.kolganov.telegramBot.telegram.handler.TelegramEventHandler;
-import me.kolganov.telegramBot.telegram.service.twitch.TelegramTwitchService;
+import me.kolganov.telegramBot.telegram.botService.twitch.TelegramTwitchService;
 import me.kolganov.telegramBot.telegram.state.BotState;
 import me.kolganov.telegramBot.utils.Constants;
 import org.springframework.stereotype.Service;

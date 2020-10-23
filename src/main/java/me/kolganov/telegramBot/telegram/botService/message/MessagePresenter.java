@@ -1,4 +1,4 @@
-package me.kolganov.telegramBot.telegram.service.message;
+package me.kolganov.telegramBot.telegram.botService.message;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;

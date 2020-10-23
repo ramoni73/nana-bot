@@ -1,4 +1,4 @@
-package me.kolganov.telegramBot.integration.twitch.domain;
+package me.kolganov.telegramBot.integration.twitch.domain.game;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

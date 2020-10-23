@@ -30,6 +30,18 @@ public class Settings {
     @Value("${twitch.api.gameInfoUrl}")
     private String twitchApiGameInfoUrl;
 
+    @Value("${twitch.api.webhookUrl}")
+    private String twitchApiWebhookUrl;
+
+    @Value("${twitch.api.callbackUrl}")
+    private String twitchApiCallbackUrl;
+
+    @Value("${twitch.api.streamersUrl}")
+    private String twitchApiStreamersUrl;
+
+    @Value("${twitch.api.subscriptionsUrl}")
+    private String twitchApiSubscriptionsUrl;
+
     @Value("${twitch.clientId}")
     private String twitchClientId;
 
