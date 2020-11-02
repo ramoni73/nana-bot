@@ -32,7 +32,9 @@ public class CheckTwitchSubscriptionsTask {
 
         subscription.getSubscriptionData().forEach(s -> {
             LocalDateTime dateTime = LocalDateTime.parse(s.getExpiresAt(), formatter);
-            if (now.plusDays(1).equals(dateTime))
+            log.info("today: {}, expiration: {}", now, dateTime);
+
+            if (now.plusDays(1).getDayOfYear() == dateTime.getDayOfYear())
                 updateList.add(s);
         });
 
